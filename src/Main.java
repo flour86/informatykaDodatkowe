@@ -1,4 +1,5 @@
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -16,7 +17,6 @@ public class Main {
             System.out.println("4 aby uzyc randomizera okreslonych rzeczy");
             System.out.println();
             System.out.println("0 aby wyjsc");
-            System.out.println();
 
             Scanner scan1 = new Scanner(System.in);
             int scan1Int = scan1.nextInt();
@@ -66,7 +66,6 @@ public class Main {
             System.out.println("3 - Nozyce");
             System.out.println();
             System.out.println("0 - Wyjscie");
-            System.out.println();
 
             Scanner scan = new Scanner(System.in);
             int scanInt = scan.nextInt();
@@ -134,7 +133,6 @@ public class Main {
             System.out.println("Na ile kostek chcesz grac? (mozna podac duza liczbe, ale tego nie radze)");
             System.out.println();
             System.out.println("Exit - wyjscie (nie dziala, trzeba przeklikac sie przez gre )");
-            System.out.println();
 
             Scanner scan = new Scanner(System.in);
             int scanInt = scan.nextInt();
@@ -147,7 +145,6 @@ public class Main {
 
             System.out.println("Kosci gracza: " + playerDice);
             System.out.println("Kosci CPU: " + enemyDice);
-            System.out.println();
 
             if (playerDice > enemyDice) {
                 System.out.println("Wygrywasz!");
@@ -168,42 +165,61 @@ public class Main {
         Random rand = new Random();
         int playerScore = 0;
         int enemyScore = 0;
-        int loop = 0;
+        boolean loop = true;
+        int playerMarbles;
+        int enemyMarbles;
 
-        while (loop < 3) {
+        while (loop) {
             System.out.println();
             System.out.println("Witaj w slabej wersji gry z kulkami ze \"Squid Game\"");
             System.out.println();
             System.out.println("Jaki budzet kulek chcesz miec?");
             System.out.println();
-            System.out.println("Exit - wyjscie (nie dziala, trzeba przeklikac sie przez gre )");
-            System.out.println();
+            System.out.println("0 - wyjscie (nie dziala, trzeba przeklikac sie przez gre )");
 
             Scanner scan = new Scanner(System.in);
-            int scanInt = scan.nextInt();
-            int marbleBudget = scanInt;
+            int marbleBudget = scan.nextInt();
+            playerMarbles = marbleBudget;
+            enemyMarbles = marbleBudget;
 
-            int playerMarbles = marbleBudget;
-            int enemyMarbles = marbleBudget;
+            while ((playerMarbles < marbleBudget * 2) || (enemyMarbles < marbleBudget * 2)) {
+                System.out.println("Masz " + playerMarbles + " kulek");
+                System.out.println("Ile kulek obstawiasz?");
+                Scanner bid = new Scanner(System.in);
+                int playerBid = bid.nextInt();
+                int enemyBid = ThreadLocalRandom.current().nextInt(1, marbleBudget + 1);
 
-            System.out.println("Obstawiasz parzystste (true), czy nieparzyste (false)?");
-            System.out.println();
-            Scanner guess = new Scanner(System.in);
-            boolean playerGuess = guess.hasNextBoolean();
+                System.out.println("Obstawiasz parzystste (true), czy nieparzyste (false)?");
+                System.out.println(enemyBid); //test
+                Scanner guess = new Scanner(System.in);
+                boolean playerGuess = guess.hasNextBoolean();
 
-            if (enemyMarbleCountIsEven(enemyMarbles) == playerGuess) {
-                //kulki od oponenta leca do gracza, cpu traci kulki ktore zbidowal
+                if(playerBid > playerMarbles || playerBid < 1) {
+                    System.out.println("ERROR");
+                }
+                else {
+                    //cos jest z warunkiem nie tak
+                    System.out.println(enemyBidIsEven(enemyBid));//test
+                    if (playerGuess == enemyBidIsEven(enemyBid)) {
+                        playerMarbles = playerMarbles + enemyBid;
+                        enemyMarbles = enemyMarbles - enemyBid;
+                        System.out.println("Trafiles! Zyskujesz kulki przeciwnika");
+                        System.out.println(enemyMarbles);//test
+                    } else {
+                        enemyMarbles = enemyMarbles + playerBid;
+                        playerMarbles = playerMarbles - playerBid;
+                        System.out.println("Przeciwnik cie przechytrzyl! Tracisz obstawione kulki...");
+                        System.out.println(enemyMarbles);//test
+                    }
+                }
             }
-            else {
-                //obstawienie gracza leci do oponenta
-            }
-
-            loop++;
+            //wyjscie zrob, tak zeby dzialalo
         }
     }
 
-    public static boolean enemyMarbleCountIsEven(int enemyMarbles) {
-        if (enemyMarbles % 2 == 0) {
+    public static boolean enemyBidIsEven(int enemyBid) {
+        //mozliwe ze tutaj cos tez jest nie tak, ale raczej nie
+        if (enemyBid % 2 == 0) {
             return true;
         }
         else {
@@ -212,6 +228,6 @@ public class Main {
     }
 
     public static void wheelDecideRipOff() {
-
+        //wstawiasz slowa do tabeli stringow a pozniej losowo wybierasz komorke z tej tabeli i ja wyswietlasz
     }
 }
